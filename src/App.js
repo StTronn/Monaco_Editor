@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import DropdownExampleSearchSelection from "./components/DropDown";
 import Output from "./components/Output";
+import Variables from "./components/Variables";
 import Editor from "@monaco-editor/react";
 import styled from "styled-components";
 import { Button } from "semantic-ui-react";
@@ -14,6 +15,10 @@ const Cointainer = styled.div`
   margin-bottom: 20px;
   grid-template-rows: 40px 80vh 40px;
   row-gap: 10px;
+`;
+const VariableCointainer = styled.div`
+  display: grid;
+  margin: 0 200px;
 `;
 const ButtonCointainer = styled.div`
   display: grid;
@@ -29,6 +34,7 @@ function App() {
   const [theme, setTheme] = useState("dark");
   const [output, setOutput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [varObj, setVarObj] = useState({});
   const valueGetter = useRef();
 
   function handleEditorDidMount(_valueGetter) {
@@ -36,16 +42,30 @@ function App() {
     valueGetter.current = _valueGetter;
   }
 
-  let fetchData = async () => {
+  let fetchData = () => {
+    let types = { python: "python", javascript: "node", php: "php" };
+    let d = { name: types[language], var_obj: {}, text: valueGetter.current() };
+    console.log("hello fetch");
     setLoading(true);
-    console.log("hello");
-    let res = await axios.post("http://localhost:8080/parser", {
-      var_obj: {},
-      text: valueGetter.current(),
-      filename: "node",
-    });
-    setLoading(false);
-    setOutput(res.data.status);
+
+    fetch("http://localhost:8080/parser", {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      method: "POST",
+      body: JSON.stringify(d),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        setOutput(data.output);
+        setLoading(false);
+      })
+      .catch(function (res) {
+        console.log(res);
+        setLoading(false);
+      });
   };
 
   function handleShowValue() {
@@ -54,6 +74,9 @@ function App() {
 
   return (
     <>
+      <VariableCointainer>
+        <Variables />
+      </VariableCointainer>
       <Cointainer>
         <ButtonCointainer>
           <DropdownExampleSearchSelection
@@ -72,7 +95,7 @@ function App() {
           />
         </ButtonCointainer>
         <Editor
-          value={"// write your code here"}
+          value={""}
           language={language}
           theme={theme}
           editorDidMount={handleEditorDidMount}
@@ -88,8 +111,6 @@ function App() {
         <h1>Output</h1>
         <Output style={{ minWidth: "40px" }}>{output}</Output>
       </Cointainer>
-      {!loading && <div>{output}</div>}
-      {loading && <h1> Loading</h1>}
     </>
   );
 }
