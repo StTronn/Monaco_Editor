@@ -5,7 +5,7 @@ import Variables from "./components/Variables";
 import Editor from "@monaco-editor/react";
 import styled from "styled-components";
 import { Button } from "semantic-ui-react";
-import axios from "axios";
+import _ from "lodash";
 
 const Cointainer = styled.div`
   display: grid;
@@ -34,7 +34,7 @@ function App() {
   const [theme, setTheme] = useState("dark");
   const [output, setOutput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [varObj, setVarObj] = useState({});
+  const [varList, setVarList] = useState([{ $i: 1 }]);
   const valueGetter = useRef();
 
   function handleEditorDidMount(_valueGetter) {
@@ -42,13 +42,38 @@ function App() {
     valueGetter.current = _valueGetter;
   }
 
+  let updater = (index, obj) => {
+    let arr = [...varList];
+    arr[index] = obj;
+    console.log(arr);
+    setVarList(arr);
+  };
+
+  let createNewFeild = (obj) => {
+    let arr = [...varList];
+    arr.push(obj);
+    setVarList(arr);
+  };
+
   let fetchData = () => {
     let types = { python: "python", javascript: "node", php: "php" };
-    let d = { name: types[language], var_obj: {}, text: valueGetter.current() };
+    let varObj = {};
+    for (let i = 0; i < varList.length; i++) {
+      let key = Object.keys(varList[i])[0];
+      if (key === "$") continue;
+      let name = key.startsWith("$") ? key : "$" + key;
+      varObj[name] = Object.entries(varList[i])[0][1];
+    }
+    console.log("varObj", varObj);
+    let d = {
+      name: types[language],
+      var_obj: varObj,
+      text: valueGetter.current(),
+    };
     console.log("hello fetch");
     setLoading(true);
 
-    fetch("http://localhost:8080/parser", {
+    fetch("https://nodetest3000.herokuapp.com/parser", {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -75,7 +100,11 @@ function App() {
   return (
     <>
       <VariableCointainer>
-        <Variables />
+        <Variables
+          varList={varList}
+          createNewFeild={createNewFeild}
+          updater={updater}
+        />
       </VariableCointainer>
       <Cointainer>
         <ButtonCointainer>
