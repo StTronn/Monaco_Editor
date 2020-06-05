@@ -16,6 +16,11 @@
     "semantic-ui-react": "^0.88.2",
     "styled-components": "^5.1.1"
   },
+  "engines": {
+    "npm": "6.13.4",
+    "yarn": "1.21.1",
+    "node": "13.5.0"
+  },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
