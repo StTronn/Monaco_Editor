@@ -67,6 +67,7 @@ function App() {
     }
     console.log(valueGetter.current());
     let d = {
+      id: "123",
       name: types[language],
       var_obj: varObj,
       text: valueGetter.current(),
