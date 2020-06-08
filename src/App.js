@@ -5,15 +5,16 @@ import Variables from "./components/Variables";
 import Editor from "@monaco-editor/react";
 import styled from "styled-components";
 import { Button } from "semantic-ui-react";
+import { URL } from "./utils";
 import _ from "lodash";
 
 const Cointainer = styled.div`
   display: grid;
-  margin-left: 90px;
-  margin-right: 90px;
+  margin-left: 200px;
+  margin-right: 200px;
   margin-top: 20px;
   margin-bottom: 20px;
-  grid-template-rows: 40px 80vh 40px;
+  grid-template-rows: 40px 40vh 40px;
   row-gap: 10px;
 `;
 const VariableCointainer = styled.div`
@@ -55,7 +56,7 @@ function App() {
     setVarList(arr);
   };
 
-  let fetchData = () => {
+  let fetchdata = (path) => {
     let types = { python: "python", javascript: "node", php: "php" };
     let varObj = {};
     for (let i = 0; i < varList.length; i++) {
@@ -64,7 +65,7 @@ function App() {
       let name = key.startsWith("$") ? key : "$" + key;
       varObj[name] = Object.entries(varList[i])[0][1];
     }
-    console.log("varObj", varObj);
+    console.log(valueGetter.current());
     let d = {
       name: types[language],
       var_obj: varObj,
@@ -73,7 +74,7 @@ function App() {
     console.log("hello fetch");
     setLoading(true);
 
-    fetch("https://nodetest3000.herokuapp.com/parser", {
+    fetch(URL + path, {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -92,10 +93,6 @@ function App() {
         setLoading(false);
       });
   };
-
-  function handleShowValue() {
-    fetchData();
-  }
 
   return (
     <>
@@ -129,14 +126,36 @@ function App() {
           theme={theme}
           editorDidMount={handleEditorDidMount}
         />
-        <Button
-          style={{ width: "160px", justifySelf: "right" }}
-          primary={!loading}
-          onClick={handleShowValue}
-          disabled={!isEditorReady}
-        >
-          {loading ? "Running" : "Run"}
-        </Button>
+        <div>
+          <Button
+            style={{
+              width: "160px",
+              display: "inline",
+              justifySelf: "right",
+            }}
+            primary={!loading}
+            onClick={() => {
+              fetchdata("/dryRun");
+            }}
+            disabled={!isEditorReady}
+          >
+            {loading ? "Running" : "Run"}
+          </Button>
+          <Button
+            style={{
+              width: "160px",
+              display: "inline",
+              justifySelf: "right",
+            }}
+            primary={!loading}
+            onClick={() => {
+              fetchdata("/uploadCode");
+            }}
+            disabled={!isEditorReady}
+          >
+            {loading ? "Uploading" : "Upload"}
+          </Button>
+        </div>
         <h1>Output</h1>
         <Output style={{ minWidth: "40px" }}>{output}</Output>
       </Cointainer>
