@@ -57,7 +57,7 @@ function App() {
   };
 
   let fetchdata = (path) => {
-    let types = { python: "python", javascript: "node", php: "php" };
+    let types = { python: "python", javascript: "javascript", php: "php" };
     let varObj = {};
     for (let i = 0; i < varList.length; i++) {
       let key = Object.keys(varList[i])[0];
@@ -65,14 +65,15 @@ function App() {
       let name = key.startsWith("$") ? key : "$" + key;
       varObj[name] = Object.entries(varList[i])[0][1];
     }
-    console.log(valueGetter.current());
+
     let d = {
       id: "123",
-      name: types[language],
-      var_obj: varObj,
-      text: valueGetter.current(),
+      lang: types[language],
+      vars: varObj,
+      code: valueGetter.current(),
     };
-    console.log("hello fetch");
+
+    console.log(d);
     setLoading(true);
 
     fetch(URL + path, {
