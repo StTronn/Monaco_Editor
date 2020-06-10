@@ -1,33 +1,11 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState } from "react";
 import DropdownExampleSearchSelection from "./components/DropDown";
 import Output from "./components/Output";
 import Variables from "./components/Variables";
 import Editor from "@monaco-editor/react";
-import styled from "styled-components";
 import { Button } from "semantic-ui-react";
 import { URL } from "./utils";
-import _ from "lodash";
-
-const Cointainer = styled.div`
-  display: grid;
-  margin-left: 200px;
-  margin-right: 200px;
-  margin-top: 20px;
-  margin-bottom: 20px;
-  grid-template-rows: 40px 40vh 40px;
-  row-gap: 10px;
-`;
-const VariableCointainer = styled.div`
-  display: grid;
-  margin: 0 200px;
-`;
-const ButtonCointainer = styled.div`
-  display: grid;
-  justify-self: right;
-  grid-template-columns: 100px 100px;
-  column-gap: 10px;
-  justify-content: center;
-`;
+import { Cointainer, VariableCointainer, ButtonCointainer } from "./AppStyled";
 
 function App() {
   const [isEditorReady, setIsEditorReady] = useState(false);
@@ -67,7 +45,7 @@ function App() {
     }
 
     let d = {
-      id: "123",
+      id: "1234",
       lang: types[language],
       vars: varObj,
       code: valueGetter.current(),
@@ -143,6 +121,7 @@ function App() {
           >
             {loading ? "Running" : "Run"}
           </Button>
+
           <Button
             style={{
               width: "160px",
